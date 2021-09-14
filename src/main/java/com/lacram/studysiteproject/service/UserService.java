@@ -4,18 +4,13 @@ import com.lacram.studysiteproject.dto.SignupRequestDto;
 import com.lacram.studysiteproject.model.User;
 import com.lacram.studysiteproject.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@RequiredArgsConstructor
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-
-    @Autowired
-    public UserService(UserRepository userRepository){
-        this.userRepository = userRepository;
-    }
 
     // 중복 체크, 비번 암호화 필요
     public void registerUser(SignupRequestDto requestDto) {

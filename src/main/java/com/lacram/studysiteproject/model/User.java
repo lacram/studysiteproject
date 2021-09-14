@@ -1,41 +1,50 @@
 package com.lacram.studysiteproject.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 public class User {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     private Long id;
-    @Column(nullable = false, length = 15)
-    private String user_id;
+
+    @Column(nullable = false)
+    private String userid;
+
     @Column(nullable = false)
     private String user_pw;
+
     @Column(nullable = false)
     private String user_name;
+
     @Column(nullable = false)
     private String email;
+
     @Column(nullable = false)
     private Long user_identity;
+
     @Column()
     private String github_url;
+
     @Column()
     private String blog_url;
+
     @Column(nullable = false)
     private int warning_cnt;
+
     @Column(nullable = false)
     private int account_state;
 
     public User(String user_id, String user_pw, String user_name, String email, Long user_identity){
-        this.user_id = user_id;
+        this.userid = user_id;
         this.user_pw = user_pw;
         this.user_name = user_name;
         this.email = email;
@@ -46,7 +55,7 @@ public class User {
 
     public User(String user_id, String user_pw, String user_name, String email, Long user_identity,
                 String github_url, String blog_url, int warning_cnt, int account_state){
-        this.user_id = user_id;
+        this.userid = user_id;
         this.user_pw = user_pw;
         this.user_name = user_name;
         this.email = email;
