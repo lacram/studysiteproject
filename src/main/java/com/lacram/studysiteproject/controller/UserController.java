@@ -13,10 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -40,8 +37,6 @@ public class UserController {
     // 회원가입
     @PostMapping("/signup")
     public Long join(@RequestBody SignupRequestDto requestDto) {
-        System.out.println(requestDto.getUser_id());
-        System.out.println(requestDto.getUser_pw());
         return userRepository.save(User.builder()
                 .userid(requestDto.getUser_id())
                 .userpw(passwordEncoder.encode(requestDto.getUser_pw()))
@@ -53,7 +48,7 @@ public class UserController {
 
     // 로그인
     @PostMapping("/login")
-    public Response login(@RequestBody SignupRequestDto requestDto,
+    public ResponseEntity<Response> login(@RequestBody SignupRequestDto requestDto,
                           HttpServletRequest req,
                           HttpServletResponse res) {
         try {
@@ -65,11 +60,28 @@ public class UserController {
             //redisUtil.setDataExpire(refreshJwt, user.getUsername(), JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
             res.addCookie(accessToken);
             res.addCookie(refreshToken);
-            return new Response("success", "로그인에 성공했습니다.", token);
+            return new ResponseEntity<>(new Response("success", "로그인에 성공했습니다.", token),HttpStatus.OK);
         } catch (Exception e) {
-            return new Response("error", "로그인에 실패했습니다.", e.getMessage());
+            return new ResponseEntity<>(new Response("fail", "로그인에 실패했습니다.", e.getMessage()),HttpStatus.BAD_REQUEST);
+            //return ResponseEntity.badRequest().body(new Response("fail", "로그인에 실패했습니다.", e.getMessage()));
         }
     }
 
+    @GetMapping("/user/{userid}/id/exist")
+    public ResponseEntity<Response> checkUseridDuplicate(@PathVariable String userid){
+        if (userRepository.existsByUserid(userid)) return new ResponseEntity<>(new Response("fail", "이미 존재하는 아이디입니다."), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new Response("success", "사용가능한 아이디입니다."), HttpStatus.OK);
+    }
 
+    @GetMapping("/user/{email}/email/exist")
+    public ResponseEntity<Response> checkEmailDuplicate(@PathVariable String email){
+        if (userRepository.existsByEmail(email)) return new ResponseEntity<>(new Response("fail", "이미 존재하는 이메일입니다."), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new Response("success", "사용가능한 이메일입니다."), HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{username}/username/exist")
+    public ResponseEntity<Response> checkusernameDuplicate(@PathVariable String username){
+        if (userRepository.existsByUsername(username)) return new ResponseEntity<>(new Response("fail", "이미 존재하는 닉네임입니다."), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new Response("success", "사용가능한 닉네임입니다."), HttpStatus.OK);
+    }
 }

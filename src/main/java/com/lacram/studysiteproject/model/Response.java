@@ -6,12 +6,17 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Response {
-    private String response;
+    private String status;
     private String message;
     private Object data;
 
-    public Response(String response, String message, Object data) {
-        this.response = response;
+    public Response(String status, String message) {
+        this.status = status;
+        this.message = message;
+    }
+
+    public Response(String status, String message, Object data) {
+        this.status = status;
         this.message = message;
         this.data = data;
     }
