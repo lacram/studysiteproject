@@ -21,7 +21,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getPassword() {
-        return user.getUser_pw();
+        return user.getUserpw();
     }
 
     @Override

@@ -16,53 +16,31 @@ public class User {
     @Id
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "user_id")
     private String userid;
 
-    @Column(nullable = false)
-    private String user_pw;
+    @Column(nullable = false, name = "user_pw")
+    private String userpw;
 
-    @Column(nullable = false)
-    private String user_name;
+    @Column(nullable = false, name = "user_name")
+    private String username;
 
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
-    private Long user_identity;
+    @Column(nullable = false, name = "user_identity")
+    private Long useridentity;
 
-    @Column()
-    private String github_url;
+    @Column(name = "github_url")
+    private String githuburl;
 
-    @Column()
-    private String blog_url;
+    @Column(name = "blog_url")
+    private String blogurl;
 
-    @Column(nullable = false)
-    private int warning_cnt;
+    @Column(nullable = false, name = "warning_cnt")
+    private int warningcnt;
 
-    @Column(nullable = false)
-    private int account_state;
+    @Column(nullable = false, name = "account_state")
+    private int accountstate;
 
-    public User(String user_id, String user_pw, String user_name, String email, Long user_identity){
-        this.userid = user_id;
-        this.user_pw = user_pw;
-        this.user_name = user_name;
-        this.email = email;
-        this.user_identity = user_identity;
-        this.warning_cnt = 0;
-        this.account_state = 1;
-    }
-
-    public User(String user_id, String user_pw, String user_name, String email, Long user_identity,
-                String github_url, String blog_url, int warning_cnt, int account_state){
-        this.userid = user_id;
-        this.user_pw = user_pw;
-        this.user_name = user_name;
-        this.email = email;
-        this.user_identity = user_identity;
-        this.github_url = github_url;
-        this.blog_url = blog_url;
-        this.warning_cnt = warning_cnt;
-        this.account_state = account_state;
-    }
 }

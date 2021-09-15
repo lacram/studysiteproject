@@ -1,6 +1,7 @@
 package com.lacram.studysiteproject.controller;
 
 import com.lacram.studysiteproject.dto.SignupRequestDto;
+import com.lacram.studysiteproject.model.Response;
 import com.lacram.studysiteproject.model.User;
 import com.lacram.studysiteproject.repository.UserRepository;
 import com.lacram.studysiteproject.security.AuthService;
@@ -37,53 +38,37 @@ public class UserController {
     private final RedisUtil redisUtil;
 
     // 회원가입
-    @PostMapping("/join")
-    public Long join(@RequestBody Map<String, String> user) {
+    @PostMapping("/signup")
+    public Long join(@RequestBody SignupRequestDto requestDto) {
+        System.out.println(requestDto.getUser_id());
+        System.out.println(requestDto.getUser_pw());
         return userRepository.save(User.builder()
-                .userid(user.get("userid"))
-                .user_pw(passwordEncoder.encode(user.get("user_pw")))
-                .user_name(user.get("user_name"))
-                .email(user.get("email"))
-                .user_identity(Long.parseLong(user.get("user_identity")))
+                .userid(requestDto.getUser_id())
+                .userpw(passwordEncoder.encode(requestDto.getUser_pw()))
+                .username(requestDto.getUser_name())
+                .email(requestDto.getEmail())
+                .useridentity(requestDto.getUser_identity())
                 .build()).getId();
     }
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Map<String, String> user,
-                                HttpServletRequest req,
-                                HttpServletResponse res) {
-
-            System.out.println(0);
-            final User member = authService.loginUser(user.get("userid"), user.get("user_pw"));
-            System.out.println(5);
-            final String token = jwtUtil.generateToken(member);
-            System.out.println(1);
-            final String refreshJwt = jwtUtil.generateRefreshToken(member);
-            System.out.println(2);
+    public Response login(@RequestBody SignupRequestDto requestDto,
+                          HttpServletRequest req,
+                          HttpServletResponse res) {
+        try {
+            final User user = authService.loginUser(requestDto.getUser_id(), requestDto.getUser_pw());
+            final String token = jwtUtil.generateToken(user);
+            final String refreshJwt = jwtUtil.generateRefreshToken(user);
             Cookie accessToken = cookieUtil.createCookie(JwtUtil.ACCESS_TOKEN_NAME, token);
-            System.out.println(3);
             Cookie refreshToken = cookieUtil.createCookie(JwtUtil.REFRESH_TOKEN_NAME, refreshJwt);
-            System.out.println(4);
-            redisUtil.setDataExpire(refreshJwt, member.getUserid(), JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
-            System.out.println(6);
+            //redisUtil.setDataExpire(refreshJwt, user.getUsername(), JwtUtil.REFRESH_TOKEN_VALIDATION_SECOND);
             res.addCookie(accessToken);
-            System.out.println(7);
             res.addCookie(refreshToken);
-            System.out.println(8);
-            return ResponseEntity.ok(token);
-
-//        catch (Exception e) {
-//            System.out.println(-1);
-//            return ResponseEntity.badRequest().build();
-//        }
-    }
-
-
-    // 회원 조회 test
-    @GetMapping("/list")
-    public List<User> getUsers(){
-        return userRepository.findAll();
+            return new Response("success", "로그인에 성공했습니다.", token);
+        } catch (Exception e) {
+            return new Response("error", "로그인에 실패했습니다.", e.getMessage());
+        }
     }
 
 

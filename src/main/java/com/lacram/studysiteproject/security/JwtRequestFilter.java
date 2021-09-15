@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
@@ -49,7 +50,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         try{
             if(jwtToken != null){
                 jwt = jwtToken.getValue();
-                username = jwtUtil.getUsername(jwt);
+                username = jwtUtil.getUserid(jwt);
             }
             if(username!=null){
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -71,9 +72,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         try{
             if(refreshJwt != null){
+                // db에서 refresh토큰 받아오는 것으로 변경할것
                 refreshUname = redisUtil.getData(refreshJwt);
 
-                if(refreshUname.equals(jwtUtil.getUsername(refreshJwt))){
+                if(refreshUname.equals(jwtUtil.getUserid(refreshJwt))){
                     UserDetails userDetails = userDetailsService.loadUserByUsername(refreshUname);
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
                     usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
